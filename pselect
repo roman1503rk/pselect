@@ -12,7 +12,7 @@
 // флаг и обработчик сигнала
 static volatile sig_atomic_t was_sighup = 0;
 
-static void sighup_handler(int signal number)
+static void sighup_handler(int signal_number)
 {   
     was_sighup = 1;
 }
@@ -124,6 +124,7 @@ int main(int argc, char **argv)
 
         // max_fd + 1 — до какого бита просматривать
         // &read_fds — ждём готовность к чтению
+        // NULL, NULL, NULL — запись и исключения не интересуют, без таймаута, ждать бесконечно
         // &wait_mask — маска сигналов на время ожидания
         int ready = pselect(max_fd + 1, &read_fds, NULL, NULL, NULL,  &wait_mask);
 
@@ -205,10 +206,6 @@ int main(int argc, char **argv)
                 if (errno == EINTR) 
                 {
                     // прервано сигналом — повторим
-                } 
-                else if (errno == EAGAIN || errno == EWOULDBLOCK)
-                {
-                    // сокет неблокирующий — нормально
                 } 
                 else 
                 {
