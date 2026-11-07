@@ -151,6 +151,7 @@ int main(int argc, char **argv)
             was_sighup = 0;
         }
 
+        int accepted_now = 0;
         if (FD_ISSET(server_fd, &read_fds))
         {
             struct sockaddr_in client_addr;
@@ -170,6 +171,7 @@ int main(int argc, char **argv)
                 if (client_fd == -1)
                 {
                     client_fd = new_fd;
+                    accepted_now = 1; 
                     printf("Keeping connection fd=%d\n", client_fd);
                 } 
                 // если уже есть — сразу закрываем нового
@@ -183,7 +185,7 @@ int main(int argc, char **argv)
         }
 
         // чтение данных
-        if (client_fd != -1 && FD_ISSET(client_fd, &read_fds))
+        if (!accepted_now && client_fd != -1 && FD_ISSET(client_fd, &read_fds))
         {
             char buffer[4096];
             ssize_t received = recv(client_fd, buffer, sizeof(buffer), 0);
