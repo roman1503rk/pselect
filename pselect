@@ -120,12 +120,10 @@ int main(int argc, char **argv)
         // сброс флага и вызов pselect
         was_sighup = 0;
 
-        sigset_t wait_mask;
-        sigemptyset(&wait_mask);
+        sigset_t wait_mask = original_mask;
 
         // max_fd + 1 — до какого бита просматривать
         // &read_fds — ждём готовность к чтению
-        // NULL, NULL, NULL — запись и исключения не интересуют, без таймаута, ждать бесконечно
         // &wait_mask — маска сигналов на время ожидания
         int ready = pselect(max_fd + 1, &read_fds, NULL, NULL, NULL,  &wait_mask);
 
